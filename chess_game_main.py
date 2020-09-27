@@ -11,7 +11,9 @@ gap = 75
 BLACK = (139, 69, 45)
 WHITE = (250, 235, 215)
 RED = (255, 0, 0)
-
+YELLOW = (255, 255, 0)
+piece_list = []
+black_pawn_list = []
 # set the display screen
 screen = pygame.display.set_mode((WIDTH, WIDTH + E_WIDTH))
 # set the screen caption
@@ -56,7 +58,7 @@ def create_grid():
     for i in range(8):
         grid.append([])
         for j in range(8):
-            box = Box(WHITE, i, j, gap)
+            box = Box(WHITE, j, i, gap)
             grid[i].append(box)
     return grid
 
@@ -64,8 +66,8 @@ def create_grid():
 # To draw grid lines
 def create_board():
     for i in range(9):
-        pygame.draw.line(screen, BLACK, (0, i * gap), (WIDTH, i * gap))
-        pygame.draw.line(screen, BLACK, (i * gap, 0), (i * gap, WIDTH))
+        pygame.draw.line(screen, BLACK, (0, i * gap), (WIDTH, i * gap), 3)
+        pygame.draw.line(screen, BLACK, (i * gap, 0), (i * gap, WIDTH), 3)
 
 
 # To make a black and white pattern in the board
@@ -76,21 +78,28 @@ def make_box(grid):
                 grid[i][j].clr = BLACK
             else:
                 grid[i][j].clr = WHITE
-            #grid[i][j].draw_box()
-    create_board()
 
 
-def get_row(pos):
-    x, y = pos
-    row = y // gap
-    col = x // gap
-    return row, col
+def get_row(position):
+    x, y = position
+    rows = y // gap
+    cols = x // gap
+    return rows, cols
 
 
 grid = create_grid()
 make_box(grid)
 
+
 # class for a pawn piece
+def check_diagonal(row, col):
+    print(row, col)
+    if col > 0 and grid[row + 1][col - 1].piece == white_pawn:  # left
+        grid[row + 1][col - 1].clr = RED
+    if col < 7 and grid[row + 1][col + 1].piece == white_pawn:  # right
+        grid[row + 1][col + 1].clr = RED
+
+
 class Pawn:
     def __init__(self, p_x, p_y):
         self.px = p_x
@@ -105,17 +114,40 @@ class Pawn:
         screen.blit(black_pawn, (self.px, self.py))
 
     def check_move(self, row, col):
+        print("cm", row, col)
+        check_diagonal(row, col)
         if self.first_move:
-            grid[row][col+1].clr = RED
-            grid[row][col+2].clr = RED
+            print("in if", row, col)
+            print(grid[row][col])
+            grid[row + 1][col].clr = YELLOW
+            grid[row + 2][col].clr = YELLOW
         else:
-            grid[row][col+1].clr = RED
-        grid[self.row + 1][self.col].draw_box()
+            grid[row + 1][col].clr = YELLOW
 
 
-p = Pawn(10, 85)
-p1 = Pawn(85, 85)
-p2 = Pawn(85+75, 85)
+def check_piece_move(grid, row, col):
+    print("check piece", row, col)
+    if grid[row][col].piece is not None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
+        if len(piece_list) == 0:
+            grid[row][col].piece.check_move(row, col)
+            piece_list.append(grid[row][col].piece)
+        else:
+            piece_list.pop()
+            make_box(grid)
+            grid[row][col].piece.check_move(row, col)
+            piece_list.append(grid[row][col].piece)
+    elif grid[row][col].piece is None and grid[row][col].clr == YELLOW:
+        pass  # function to move the piece
+    elif grid[row][col].piece is not None and grid[row][col].clr == RED:
+        pass  # function to move the piece and eliminate enemy piece
+    elif grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
+        make_box(grid)
+
+
+for i in range(8):
+    p = Pawn(10 + i * gap, 85)
+    black_pawn_list.append(p)
+
 # main game loop
 running = True
 while running:
@@ -130,20 +162,23 @@ while running:
         # check if mouse button is pressed
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            if pos[1]< 600:
+            if pos[1] < 600:
                 row, col = get_row(pos)
-            if grid[row][col].piece is None:
-                make_box(grid)
-            else:
-                grid[row][col].piece.check_move(col,row)
+                print("lopp", row, col)
+                check_piece_move(grid, row, col)
 
     # To create a chess board
     for i in range(8):
         for j in range(8):
             grid[i][j].draw_box()
-    p.show_pawn()
-    p1.show_pawn()
-    p2.show_pawn()
+
+    for i in range(8):
+        black_pawn_list[i].show_pawn()
+    create_board()
+    screen.blit(white_pawn, (10+75, 10 + 75 * 2))
+    screen.blit(white_pawn, (10 + 75 * 3, 10 + 75 * 2))
+    grid[2][1].piece = white_pawn
+    grid[2][3].piece = white_pawn
 
     # update the display screen
     pygame.display.update()
