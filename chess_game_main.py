@@ -92,14 +92,6 @@ make_box(grid)
 
 
 # class for a pawn piece
-def check_diagonal(row, col):
-    print(row, col)
-    if col > 0 and grid[row + 1][col - 1].piece == white_pawn:  # left
-        grid[row + 1][col - 1].clr = RED
-    if col < 7 and grid[row + 1][col + 1].piece == white_pawn:  # right
-        grid[row + 1][col + 1].clr = RED
-
-
 class Pawn:
     def __init__(self, p_x, p_y):
         self.px = p_x
@@ -108,25 +100,39 @@ class Pawn:
         self.col = p_x // gap
         grid[self.row][self.col].piece = self
         self.first_move = True
+        self.diagonal_move = []
+        self.straight_move = []
 
     # To show a pawn on board
     def show_pawn(self):
         screen.blit(black_pawn, (self.px, self.py))
 
     def check_move(self, row, col):
-        print("cm", row, col)
-        check_diagonal(row, col)
+        self.check_diagonal(row, col)
         if self.first_move:
-            print("in if", row, col)
-            print(grid[row][col])
             grid[row + 1][col].clr = YELLOW
             grid[row + 2][col].clr = YELLOW
         else:
             grid[row + 1][col].clr = YELLOW
 
+    def check_diagonal(self, row, col):
+        if col > 0 and grid[row + 1][col - 1].piece == white_pawn:  # left
+            grid[row + 1][col - 1].clr = RED
+            self.diagonal_move.append(grid[row + 1][col - 1])
+        if col < 7 and grid[row + 1][col + 1].piece == white_pawn:  # right
+            grid[row + 1][col + 1].clr = RED
+            self.diagonal_move.append(grid[row + 1][col + 1])
+
+    def move(self, row, col):
+        self.px = col * gap + 10
+        self.py = row * gap + 10
+        grid[row][col].piece = self
+        self.first_move = False
+        grid[self.row][self.col].piece = None
+        make_box(grid)
+
 
 def check_piece_move(grid, row, col):
-    print("check piece", row, col)
     if grid[row][col].piece is not None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         if len(piece_list) == 0:
             grid[row][col].piece.check_move(row, col)
@@ -136,12 +142,17 @@ def check_piece_move(grid, row, col):
             make_box(grid)
             grid[row][col].piece.check_move(row, col)
             piece_list.append(grid[row][col].piece)
+        print(piece_list)
+
     elif grid[row][col].piece is None and grid[row][col].clr == YELLOW:
-        pass  # function to move the piece
+        # function to move the piece
+        piece_list[0].move(row, col)
+
     elif grid[row][col].piece is not None and grid[row][col].clr == RED:
         pass  # function to move the piece and eliminate enemy piece
     elif grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         make_box(grid)
+        piece_list.clear()
 
 
 for i in range(8):
@@ -164,7 +175,6 @@ while running:
             pos = pygame.mouse.get_pos()
             if pos[1] < 600:
                 row, col = get_row(pos)
-                print("lopp", row, col)
                 check_piece_move(grid, row, col)
 
     # To create a chess board
@@ -175,7 +185,7 @@ while running:
     for i in range(8):
         black_pawn_list[i].show_pawn()
     create_board()
-    screen.blit(white_pawn, (10+75, 10 + 75 * 2))
+    screen.blit(white_pawn, (10 + 75, 10 + 75 * 2))
     screen.blit(white_pawn, (10 + 75 * 3, 10 + 75 * 2))
     grid[2][1].piece = white_pawn
     grid[2][3].piece = white_pawn
