@@ -91,9 +91,25 @@ grid = create_grid()
 make_box(grid)
 
 
+# To check for a valid place to move
+def check_place(obj):
+    if obj.piece is None:
+        return True
+    else:
+        return False
+
+
+def check_pawn_first_move(obj):
+    if check_place(obj):
+        obj.clr = YELLOW
+        return True
+    else:
+        return False
+
+
 # class for a pawn piece
 class Pawn:
-    def __init__(self, p_x, p_y):
+    def __init__(self, p_x, p_y, clr):
         self.px = p_x
         self.py = p_y
         self.row = p_y // gap
@@ -102,34 +118,46 @@ class Pawn:
         self.first_move = True
         self.diagonal_move = []
         self.straight_move = []
+        self.eliminated = False
+        self.clor = clr
 
     # To show a pawn on board
     def show_pawn(self):
-        screen.blit(black_pawn, (self.px, self.py))
+        if not self.eliminated:
+            screen.blit(black_pawn, (self.px, self.py))
 
     def check_move(self, row, col):
         self.check_diagonal(row, col)
         if self.first_move:
-            grid[row + 1][col].clr = YELLOW
-            grid[row + 2][col].clr = YELLOW
+            if check_pawn_first_move(grid[row + 1][col]):
+                if check_place(grid[row + 2][col]):
+                    grid[row + 2][col].clr = YELLOW
         else:
-            grid[row + 1][col].clr = YELLOW
+            check_pawn_first_move(grid[row + 1][col])
 
     def check_diagonal(self, row, col):
-        if col > 0 and grid[row + 1][col - 1].piece == white_pawn:  # left
+        if col > 0 and grid[row + 1][col - 1].piece is not None and grid[row + 1][col - 1].piece.clor == WHITE:  # left
             grid[row + 1][col - 1].clr = RED
             self.diagonal_move.append(grid[row + 1][col - 1])
-        if col < 7 and grid[row + 1][col + 1].piece == white_pawn:  # right
+        if col < 7 and grid[row + 1][col + 1].piece is not None and grid[row + 1][col + 1].piece.clor == WHITE:  # right
             grid[row + 1][col + 1].clr = RED
             self.diagonal_move.append(grid[row + 1][col + 1])
 
-    def move(self, row, col):
+    def move(self, row, col, collision):
         self.px = col * gap + 10
         self.py = row * gap + 10
+        if collision:
+            self.eliminate(row, col)
         grid[row][col].piece = self
         self.first_move = False
         grid[self.row][self.col].piece = None
+        self.row = self.py // gap
+        self.col = self.px // gap
         make_box(grid)
+
+    def eliminate(self, row, col):
+        grid[row][col].piece.eliminated = True
+        grid[row][col].piece = None
 
 
 def check_piece_move(grid, row, col):
@@ -146,18 +174,22 @@ def check_piece_move(grid, row, col):
 
     elif grid[row][col].piece is None and grid[row][col].clr == YELLOW:
         # function to move the piece
-        piece_list[0].move(row, col)
+        piece_list[0].move(row, col, collision=False)
 
     elif grid[row][col].piece is not None and grid[row][col].clr == RED:
-        pass  # function to move the piece and eliminate enemy piece
+        # function to move the piece and eliminate enemy piece
+        piece_list[0].move(row, col, collision=True)
+
     elif grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         make_box(grid)
         piece_list.clear()
 
 
 for i in range(8):
-    p = Pawn(10 + i * gap, 85)
+    p = Pawn(10 + i * gap, 85, BLACK)
     black_pawn_list.append(p)
+
+s = Pawn(10 + 75, 10 + 75 * 2, WHITE)
 
 # main game loop
 running = True
@@ -182,13 +214,15 @@ while running:
         for j in range(8):
             grid[i][j].draw_box()
 
-    for i in range(8):
+    for i in range(len(black_pawn_list)):
         black_pawn_list[i].show_pawn()
+
     create_board()
-    screen.blit(white_pawn, (10 + 75, 10 + 75 * 2))
-    screen.blit(white_pawn, (10 + 75 * 3, 10 + 75 * 2))
-    grid[2][1].piece = white_pawn
-    grid[2][3].piece = white_pawn
+    s.show_pawn()
+    # screen.blit(white_pawn, (10 + 75, 10 + 75 * 2))
+    # screen.blit(white_pawn, (10 + 75 * 3, 10 + 75 * 2))
+    # grid[2][1].piece = white_pawn
+    # grid[2][3].piece = white_pawn
 
     # update the display screen
     pygame.display.update()
