@@ -15,6 +15,8 @@ YELLOW = (255, 255, 0)
 piece_list = []
 black_pawn_list = []
 white_pawn_list = []
+black_rook_list = []
+white_rook_list = []
 # set the display screen
 screen = pygame.display.set_mode((WIDTH, WIDTH + E_WIDTH))
 # set the screen caption
@@ -186,6 +188,61 @@ class White_pawn(Pawn):
             self.diagonal_move.append(grid[row - 1][col + 1])
 
 
+class Rook:
+    def __init__(self, p_x, p_y, clr, img):
+        self.px = p_x
+        self.py = p_y
+        self.row = p_y // gap
+        self.col = p_x // gap
+        self.front_list = []
+        self.back_list = []
+        self.left_list = []
+        self.right_list = []
+        grid[self.row][self.col].piece = self
+        self.eliminated = False
+        self.clor = clr
+        self.rook_img = img
+
+    # To show a rook on board
+    def show_rook(self):
+        if not self.eliminated:
+            screen.blit(self.rook_img, (self.px, self.py))
+
+    def check_move(self, row, col):
+        self.front_move(row, col)
+        self.back_move(row, col)
+        for obj in self.front_list:
+            obj.clr = YELLOW
+        for obj in self.back_list:
+            obj.clr = YELLOW
+
+    def front_move(self, row, col):
+        if row > 6:
+            return
+        else:
+            if grid[row + 1][col].piece is None:
+                self.front_list.append(grid[row + 1][col])
+                self.front_move(row + 1, col)
+            elif grid[row + 1][col].piece is not None and grid[row + 1][col].piece.clor == WHITE:
+                grid[row + 1][col].clr = RED
+                return
+            else:
+                return
+
+    def back_move(self, row, col):
+        if row < 1:
+            return
+        else:
+            if grid[row - 1][col].piece is None:
+                self.back_list.append(grid[row - 1][col])
+                self.back_move(row - 1, col)
+            elif grid[row - 1][col].piece is not None and grid[row - 1][col].piece.clor == WHITE:
+                grid[row - 1][col].clr = RED
+                return
+            else:
+                return
+
+
 def check_piece_move(grid, row, col):
     if grid[row][col].piece is not None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         if len(piece_list) == 0:
@@ -210,11 +267,13 @@ def check_piece_move(grid, row, col):
         piece_list.clear()
 
 
-for i in range(8):
-    bp = Pawn(10 + i * gap, 85, BLACK, black_pawn)
-    wp = White_pawn(10 + i * gap, 460, WHITE, white_pawn)
-    black_pawn_list.append(bp)
-    white_pawn_list.append(wp)
+# for i in range(8):
+#    bp = Pawn(10 + i * gap, 85, BLACK, black_pawn)
+#    wp = White_pawn(10 + i * gap, 460, WHITE, white_pawn)
+#    black_pawn_list.append(bp)
+#    white_pawn_list.append(wp)
+rp = Rook(10, 10+75*7, BLACK, black_rook)
+wp = White_pawn(10, 85, WHITE, black_pawn)
 
 # main game loop
 running = True
@@ -239,11 +298,13 @@ while running:
         for j in range(8):
             grid[i][j].draw_box()
 
-    for i in range(len(black_pawn_list)):
-        black_pawn_list[i].show_pawn()
-        white_pawn_list[i].show_pawn()
+    #    for i in range(len(black_pawn_list)):
+    #        black_pawn_list[i].show_pawn()
+    #        white_pawn_list[i].show_pawn()
 
     create_board()
+    rp.show_rook()
+    wp.show_pawn()
 
     # update the display screen
     pygame.display.update()
