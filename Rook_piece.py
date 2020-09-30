@@ -1,3 +1,4 @@
+# constant values
 gap = 75
 BLACK = (139, 69, 45)
 WHITE = (250, 235, 215)
@@ -15,12 +16,13 @@ def make_box(grid):
                 grid[i][j].clr = WHITE
 
 
-# To eliminate emeny piece
+# To eliminate enemy piece
 def eliminate(row, col, grid):
     grid[row][col].piece.eliminated = True
     grid[row][col].piece = None
 
 
+# class for Rook piece
 class Rook:
     def __init__(self, p_x, p_y, clr, img, grid, win):
         self.px = p_x
@@ -42,6 +44,7 @@ class Rook:
         if not self.eliminated:
             self.screen.blit(self.rook_img, (self.px, self.py))
 
+    # to check for all possible moves
     def check_move(self, row, col, grid):
         self.front_move(row, col, grid)
         self.back_move(row, col, grid)
@@ -60,6 +63,7 @@ class Rook:
         self.left_list.clear()
         self.right_list.clear()
 
+    # To check for rooks front moves
     def front_move(self, row, col, grid):
         if row > 6:
             return
@@ -73,6 +77,7 @@ class Rook:
             else:
                 return
 
+    # To check for rooks back moves
     def back_move(self, row, col, grid):
         if row < 1:
             return
@@ -86,6 +91,7 @@ class Rook:
             else:
                 return
 
+    # To check for rooks left moves
     def left_move(self, row, col, grid):
         if col < 1:
             return
@@ -99,6 +105,7 @@ class Rook:
             else:
                 return
 
+    # To check for rooks right moves
     def right_move(self, row, col, grid):
         if col > 6:
             return
@@ -112,6 +119,7 @@ class Rook:
             else:
                 return
 
+    # To move the Rook piece to given position
     def move(self, row, col, grid, collision):
         self.px = col * gap + 10
         self.py = row * gap + 10
@@ -123,6 +131,7 @@ class Rook:
         self.col = self.px // gap
         make_box(grid)
 
+    # To check for opponent piece
     def check_opponent(self, op_clr):
         if (self.clor == BLACK and op_clr == WHITE) or (self.clor == WHITE and op_clr == BLACK):
             return True
