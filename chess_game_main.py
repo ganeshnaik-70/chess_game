@@ -94,78 +94,13 @@ grid = create_grid()
 make_box(grid)
 
 
-# To check for a valid place to move
-def check_place(obj):
-    if obj.piece is None:
-        return True
-    else:
-        return False
 
 
-# To check for pawn first move is valid or mot
-def check_pawn_first_move(obj):
-    if check_place(obj):
-        obj.clr = YELLOW
-        return True
-    else:
-        return False
 
 
-# To eliminate emeny piece
-def eliminate(row, col):
-    grid[row][col].piece.eliminated = True
-    grid[row][col].piece = None
 
 
-# class for a pawn piece
-class Pawn:
-    def __init__(self, p_x, p_y, clr, img):
-        self.px = p_x
-        self.py = p_y
-        self.row = p_y // gap
-        self.col = p_x // gap
-        grid[self.row][self.col].piece = self
-        self.first_move = True
-        self.diagonal_move = []
-        self.straight_move = []
-        self.eliminated = False
-        self.clor = clr
-        self.pawn_img = img
 
-    # To show a pawn on board
-    def show_pawn(self):
-        if not self.eliminated:
-            screen.blit(self.pawn_img, (self.px, self.py))
-
-    def check_move(self, row, col):
-        if row < 7:
-            self.check_diagonal(row, col)
-            if self.first_move:
-                if check_pawn_first_move(grid[row + 1][col]):
-                    if check_place(grid[row + 2][col]):
-                        grid[row + 2][col].clr = YELLOW
-            else:
-                check_pawn_first_move(grid[row + 1][col])
-
-    def check_diagonal(self, row, col):
-        if col > 0 and grid[row + 1][col - 1].piece is not None and grid[row + 1][col - 1].piece.clor == WHITE:  # left
-            grid[row + 1][col - 1].clr = RED
-            self.diagonal_move.append(grid[row + 1][col - 1])
-        if col < 7 and grid[row + 1][col + 1].piece is not None and grid[row + 1][col + 1].piece.clor == WHITE:  # right
-            grid[row + 1][col + 1].clr = RED
-            self.diagonal_move.append(grid[row + 1][col + 1])
-
-    def move(self, row, col, collision):
-        self.px = col * gap + 10
-        self.py = row * gap + 10
-        if collision:
-            eliminate(row, col)
-        grid[row][col].piece = self
-        self.first_move = False
-        grid[self.row][self.col].piece = None
-        self.row = self.py // gap
-        self.col = self.px // gap
-        make_box(grid)
 
 
 class White_pawn(Pawn):
@@ -326,7 +261,7 @@ def check_piece_move(grid, row, col):
 
 # for i in range(8):
 #    bp = Pawn(10 + i * gap, 85, BLACK, black_pawn)
-#    wp = White_pawn(10 + i * gap, 460, WHITE, white_pawn)
+wp = White_pawn(10 +  gap, 460, WHITE, white_pawn, grid)
 #    black_pawn_list.append(bp)
 #    white_pawn_list.append(wp)
 rp = Rook(10 + 75 * 5, 10 + 75 * 2, BLACK, black_rook)
