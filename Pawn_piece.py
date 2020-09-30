@@ -1,3 +1,4 @@
+# constant values
 gap = 75
 BLACK = (139, 69, 45)
 WHITE = (250, 235, 215)
@@ -32,7 +33,7 @@ def check_pawn_first_move(obj):
         return False
 
 
-# To eliminate emeny piece
+# To eliminate enemy piece
 def eliminate(row, col, grid):
     grid[row][col].piece.eliminated = True
     grid[row][col].piece = None
@@ -59,6 +60,7 @@ class Pawn:
         if not self.eliminated:
             self.screen.blit(self.pawn_img, (self.px, self.py))
 
+    # To check for all possible moves
     def check_move(self, row, col, grid):
         if row < 7:
             self.check_diagonal(row, col, grid)
@@ -69,6 +71,7 @@ class Pawn:
             else:
                 check_pawn_first_move(grid[row + 1][col])
 
+    # To check for diagonal movement
     def check_diagonal(self, row, col, grid):
         if col > 0 and grid[row + 1][col - 1].piece is not None and grid[row + 1][col - 1].piece.clor == WHITE:  # left
             grid[row + 1][col - 1].clr = RED
@@ -77,6 +80,7 @@ class Pawn:
             grid[row + 1][col + 1].clr = RED
             self.diagonal_move.append(grid[row + 1][col + 1])
 
+    # To move the pawn piece
     def move(self, row, col, grid, collision):
         self.px = col * gap + 10
         self.py = row * gap + 10
@@ -90,7 +94,9 @@ class Pawn:
         make_box(grid)
 
 
+# class for White pawn
 class White_pawn(Pawn):
+    # To check for white pawns all possible moves
     def check_move(self, row, col, grid):
         if row > 0:
             self.check_diagonal(row, col, grid)
@@ -101,6 +107,7 @@ class White_pawn(Pawn):
             else:
                 check_pawn_first_move(grid[row - 1][col])
 
+    # To check for white pawns diagonal movements
     def check_diagonal(self, row, col, grid):
         if col > 0 and grid[row - 1][col - 1].piece is not None and grid[row - 1][col - 1].piece.clor == BLACK:  # left
             grid[row - 1][col - 1].clr = RED
