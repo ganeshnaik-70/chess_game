@@ -1,6 +1,4 @@
 gap = 75
-WIDTH = 600
-E_WIDTH = 100
 BLACK = (139, 69, 45)
 WHITE = (250, 235, 215)
 RED = (255, 0, 0)
@@ -79,7 +77,7 @@ class Pawn:
             grid[row + 1][col + 1].clr = RED
             self.diagonal_move.append(grid[row + 1][col + 1])
 
-    def move(self, row, col, collision, grid):
+    def move(self, row, col, grid, collision):
         self.px = col * gap + 10
         self.py = row * gap + 10
         if collision:
@@ -90,3 +88,23 @@ class Pawn:
         self.row = self.py // gap
         self.col = self.px // gap
         make_box(grid)
+
+
+class White_pawn(Pawn):
+    def check_move(self, row, col, grid):
+        if row > 0:
+            self.check_diagonal(row, col, grid)
+            if self.first_move:
+                if check_pawn_first_move(grid[row - 1][col]):
+                    if check_place(grid[row - 2][col]):
+                        grid[row - 2][col].clr = YELLOW
+            else:
+                check_pawn_first_move(grid[row - 1][col])
+
+    def check_diagonal(self, row, col, grid):
+        if col > 0 and grid[row - 1][col - 1].piece is not None and grid[row - 1][col - 1].piece.clor == BLACK:  # left
+            grid[row - 1][col - 1].clr = RED
+            self.diagonal_move.append(grid[row - 1][col - 1])
+        if col < 7 and grid[row - 1][col + 1].piece is not None and grid[row - 1][col + 1].piece.clor == BLACK:  # right
+            grid[row - 1][col + 1].clr = RED
+            self.diagonal_move.append(grid[row - 1][col + 1])
