@@ -1,6 +1,6 @@
 import pygame
 import os
-from chess_game_project import Pawn_piece, Rook_piece
+from chess_game_project import Pawn_piece, Rook_piece, Knight_piece, King_piece, Bishop_piece, Queen_piece
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700, 70)
 # initialize pygame module
@@ -14,10 +14,12 @@ WHITE = (250, 235, 215)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 piece_list = []
-black_pawn_list = []
-white_pawn_list = []
-black_rook_list = []
-white_rook_list = []
+pawn_list = []
+bishop_list = []
+rook_list = []
+knight_list = []
+king_list = []
+queen_list = []
 # set the display screen
 screen = pygame.display.set_mode((WIDTH, WIDTH + E_WIDTH))
 # set the screen caption
@@ -126,13 +128,48 @@ def check_piece_move(grid, row, col):
 
 
 for i in range(8):
-    bp = Pawn_piece.Pawn(10 + i * gap, 85, BLACK, black_pawn, grid, screen)
-    wp = Pawn_piece.White_pawn(10 + i * gap, 460, WHITE, white_pawn, grid, screen)
-    black_pawn_list.append(bp)
-    white_pawn_list.append(wp)
-rp = Rook_piece.Rook(10 + 75 * 5, 10 + 75 * 2, BLACK, black_rook, grid, screen)
-wr = Rook_piece.Rook(10, 85 + 75, WHITE, white_rook, grid, screen)
-# wp2 = White_rook(10 + 75 * 7, 85 + 75, WHITE, white_rook)
+    bpp = Pawn_piece.Pawn(10 + i * gap, 85, BLACK, black_pawn, grid, screen)
+    wpp = Pawn_piece.White_pawn(10 + i * gap, 460, WHITE, white_pawn, grid, screen)
+    pawn_list.append(bpp)
+    pawn_list.append(wpp)
+
+brp1 = Rook_piece.Rook(10, 10, BLACK, black_rook, grid, screen)
+brp2 = Rook_piece.Rook(10+75*7, 10, BLACK, black_rook, grid, screen)
+wrp1 = Rook_piece.Rook(10, 10+75*7, WHITE, white_rook, grid, screen)
+wrp2 = Rook_piece.Rook(10+75*7, 10+75*7, WHITE, white_rook, grid, screen)
+rook_list.append(brp1)
+rook_list.append(brp2)
+rook_list.append(wrp1)
+rook_list.append(wrp2)
+
+bkp1 = Knight_piece.Knight(10 + 75, 10, BLACK, black_horse, grid, screen)
+bkp2 = Knight_piece.Knight(10 + 75 * 6, 10, BLACK, black_horse, grid, screen)
+wkp1 = Knight_piece.Knight(10 + 75, 10+75*7, WHITE, white_horse, grid, screen)
+wkp2 = Knight_piece.Knight(10 + 75*6, 10+75*7, WHITE, white_horse, grid, screen)
+knight_list.append(bkp1)
+knight_list.append(bkp2)
+knight_list.append(wkp1)
+knight_list.append(wkp2)
+
+bbp1 = Bishop_piece.Bishop(10+75*2, 10, BLACK, black_bishop, grid, screen)
+bbp2 = Bishop_piece.Bishop(10+75*5, 10, BLACK, black_bishop, grid, screen)
+wbp1 = Bishop_piece.Bishop(10+75*2, 10+75*7, WHITE, white_bishop, grid, screen)
+wbp2 = Bishop_piece.Bishop(10+75*5, 10+75*7, WHITE, white_bishop, grid, screen)
+bishop_list.append(bbp1)
+bishop_list.append(bbp2)
+bishop_list.append(wbp1)
+bishop_list.append(wbp2)
+
+bqp = Queen_piece.Queen(10 + 75 * 3, 10, BLACK, black_queen, grid, screen)
+wqp = Queen_piece.Queen(10 + 75 * 3, 10 + 75 * 7, WHITE, white_queen, grid, screen)
+queen_list.append(bqp)
+queen_list.append(wqp)
+
+bkp = King_piece.King(10+75*4, 10, BLACK, black_king, grid, screen)
+wkp = King_piece.King(10+75*4, 10+75*7, WHITE, white_king, grid, screen)
+king_list.append(bkp)
+king_list.append(wkp)
+
 
 # main game loop
 running = True
@@ -157,13 +194,19 @@ while running:
         for j in range(8):
             grid[i][j].draw_box()
 
-    for i in range(len(black_pawn_list)):
-        black_pawn_list[i].show_pawn()
-        white_pawn_list[i].show_pawn()
+    for i in range(len(pawn_list)):
+        pawn_list[i].show_pawn()
+
+    for i in range(len(rook_list)):
+        rook_list[i].show_rook()
+        knight_list[i].show_knight()
+        bishop_list[i].show_bishop()
+
+    for i in range(len(king_list)):
+        king_list[i].show_king()
+        queen_list[i].show_queen()
 
     create_board()
-    rp.show_rook()
-    wr.show_rook()
 
     # update the display screen
     pygame.display.update()
