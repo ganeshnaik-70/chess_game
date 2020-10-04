@@ -177,6 +177,8 @@ def king_side_move(row, col, grid, p_clr):
                 return True
             elif grid[row][col].piece.piece_name == "king":
                 return False
+            else:
+                return True
     else:
         return True
 
@@ -189,8 +191,10 @@ def knight_place(row, col, grid, p_clr):
         elif grid[row][col].piece is not None:
             if grid[row][col].piece.clor == p_clr:
                 return True
-            elif grid[row][col].piece.piece_name == "king":
+            elif grid[row][col].piece.piece_name == "knight":
                 return False
+            else:
+                return True
     else:
         return True
 
