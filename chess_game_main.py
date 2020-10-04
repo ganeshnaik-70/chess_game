@@ -1,11 +1,13 @@
 import pygame
 import os
-from chess_game_project import Pawn_piece, Rook_piece, Knight_piece, King_piece, Bishop_piece, Queen_piece
+from chess_game_project import Objects
+from chess_game_project import Threat_checking
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700, 70)
 # initialize pygame module
 pygame.init()
-# set some constant values
+
+# set constant values
 WIDTH = 600
 E_WIDTH = 100
 gap = 75
@@ -14,12 +16,9 @@ WHITE = (250, 235, 215)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 piece_list = []
-pawn_list = []
-bishop_list = []
-rook_list = []
-knight_list = []
-king_list = []
-queen_list = []
+white_move = True
+black_move = False
+
 # set the display screen
 screen = pygame.display.set_mode((WIDTH, WIDTH + E_WIDTH))
 # set the screen caption
@@ -28,20 +27,6 @@ pygame.display.set_caption("Chess Game")
 ico = pygame.image.load("images/horse.png")
 # set the icon image for screen
 pygame.display.set_icon(ico)
-
-# load all piece images
-black_pawn = pygame.image.load("images/black_pawn.png")
-black_rook = pygame.image.load("images/black_rook.png")
-black_bishop = pygame.image.load("images/black_bishop.png")
-black_king = pygame.image.load("images/black_king.png")
-black_queen = pygame.image.load("images/black_queen.png")
-black_horse = pygame.image.load("images/black_horse.png")
-white_pawn = pygame.image.load("images/white_pawn.png")
-white_rook = pygame.image.load("images/white_rook.png")
-white_bishop = pygame.image.load("images/white_bishop.png")
-white_king = pygame.image.load("images/white_king.png")
-white_queen = pygame.image.load("images/white_queen.png")
-white_horse = pygame.image.load("images/white_horse.png")
 
 
 # class for box in chess board
@@ -86,6 +71,7 @@ def make_box(grid):
                 grid[i][j].clr = WHITE
 
 
+# To get row and col of specific position(tuple)
 def get_row(position):
     x, y = position
     rows = y // gap
@@ -93,6 +79,7 @@ def get_row(position):
     return rows, cols
 
 
+# call created grid function
 grid = create_grid()
 make_box(grid)
 
@@ -103,73 +90,78 @@ def eliminate(row, col, grid):
     grid[row][col].piece = None
 
 
+# check for piece to move
 def check_piece_move(grid, row, col):
-    if grid[row][col].piece is not None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
-        if len(piece_list) == 0:
-            grid[row][col].piece.check_move(row, col, grid)
-            piece_list.append(grid[row][col].piece)
-        else:
-            piece_list.pop()
-            make_box(grid)
-            grid[row][col].piece.check_move(row, col, grid)
-            piece_list.append(grid[row][col].piece)
-
-    elif grid[row][col].piece is None and grid[row][col].clr == YELLOW:
-        # function to move the piece
-        piece_list[0].move(row, col, grid, collision=False)
-
-    elif grid[row][col].piece is not None and grid[row][col].clr == RED:
-        # function to move the piece and eliminate enemy piece
-        piece_list[0].move(row, col, grid, collision=True)
-
-    elif grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
+    global white_move, black_move
+    if grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         make_box(grid)
         piece_list.clear()
 
+    elif grid[row][col].piece is None and grid[row][col].clr == YELLOW:
+        # function to move the piece
+        Threat_checking.start_pos.clear()
+        Threat_checking.final_pos.clear()
+        Threat_checking.start_pos.append(
+            [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
+                else piece_list[0].row, piece_list[0].col])
+        piece_list[0].move(row, col, grid, collision=False)
+        Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
+        if white_move:
+            if Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE, grid):
+                Threat_checking.take_back(grid)
+        else:
+            if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
+                Threat_checking.take_back(grid)
+        if piece_list[0].clor == WHITE and not Threat_checking.back:
+            white_move = False
+            black_move = True
+        elif piece_list[0].clor == BLACK and not Threat_checking.back:
+            white_move = True
+            black_move = False
+        else:
+            Threat_checking.back = False
 
-for i in range(8):
-    bpp = Pawn_piece.Pawn(10 + i * gap, 85, BLACK, black_pawn, grid, screen)
-    wpp = Pawn_piece.White_pawn(10 + i * gap, 460, WHITE, white_pawn, grid, screen)
-    pawn_list.append(bpp)
-    pawn_list.append(wpp)
+    elif (grid[row][col].piece.clor == WHITE and white_move) or (grid[row][col].piece.clor == BLACK and black_move):
+        if grid[row][col].piece is not None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
+            if len(piece_list) == 0:
+                grid[row][col].piece.check_move(row, col, grid)
+                piece_list.append(grid[row][col].piece)
+            else:
+                piece_list.pop()
+                make_box(grid)
+                grid[row][col].piece.check_move(row, col, grid)
+                piece_list.append(grid[row][col].piece)
 
-brp1 = Rook_piece.Rook(10, 10, BLACK, black_rook, grid, screen)
-brp2 = Rook_piece.Rook(10+75*7, 10, BLACK, black_rook, grid, screen)
-wrp1 = Rook_piece.Rook(10, 10+75*7, WHITE, white_rook, grid, screen)
-wrp2 = Rook_piece.Rook(10+75*7, 10+75*7, WHITE, white_rook, grid, screen)
-rook_list.append(brp1)
-rook_list.append(brp2)
-rook_list.append(wrp1)
-rook_list.append(wrp2)
+    elif grid[row][col].piece is not None and grid[row][col].clr == RED:
+        # function to move the piece and eliminate enemy piece
+        Threat_checking.start_pos.clear()
+        Threat_checking.final_pos.clear()
+        last_piece = grid[row][col].piece
+        Threat_checking.start_pos.append(
+            [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
+                else piece_list[0].row, piece_list[0].col])
+        piece_list[0].move(row, col, grid, collision=True)
+        Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
+        if white_move:
+            if Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE, grid):
+                Threat_checking.take_back(grid)
+        else:
+            if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
+                Threat_checking.take_back(grid)
+        if piece_list[0].clor == WHITE and not Threat_checking.back:
+            white_move = False
+            black_move = True
+        elif piece_list[0].clor == BLACK and not Threat_checking.back:
+            white_move = True
+            black_move = False
+        else:
+            last_piece.eliminated = False
+            grid[row][col].piece = last_piece
+            Threat_checking.back = False
 
-bkp1 = Knight_piece.Knight(10 + 75, 10, BLACK, black_horse, grid, screen)
-bkp2 = Knight_piece.Knight(10 + 75 * 6, 10, BLACK, black_horse, grid, screen)
-wkp1 = Knight_piece.Knight(10 + 75, 10+75*7, WHITE, white_horse, grid, screen)
-wkp2 = Knight_piece.Knight(10 + 75*6, 10+75*7, WHITE, white_horse, grid, screen)
-knight_list.append(bkp1)
-knight_list.append(bkp2)
-knight_list.append(wkp1)
-knight_list.append(wkp2)
 
-bbp1 = Bishop_piece.Bishop(10+75*2, 10, BLACK, black_bishop, grid, screen)
-bbp2 = Bishop_piece.Bishop(10+75*5, 10, BLACK, black_bishop, grid, screen)
-wbp1 = Bishop_piece.Bishop(10+75*2, 10+75*7, WHITE, white_bishop, grid, screen)
-wbp2 = Bishop_piece.Bishop(10+75*5, 10+75*7, WHITE, white_bishop, grid, screen)
-bishop_list.append(bbp1)
-bishop_list.append(bbp2)
-bishop_list.append(wbp1)
-bishop_list.append(wbp2)
-
-bqp = Queen_piece.Queen(10 + 75 * 3, 10, BLACK, black_queen, grid, screen)
-wqp = Queen_piece.Queen(10 + 75 * 3, 10 + 75 * 7, WHITE, white_queen, grid, screen)
-queen_list.append(bqp)
-queen_list.append(wqp)
-
-bkp = King_piece.King(10+75*4, 10, BLACK, black_king, grid, screen)
-wkp = King_piece.King(10+75*4, 10+75*7, WHITE, white_king, grid, screen)
-king_list.append(bkp)
-king_list.append(wkp)
-
+# initialize objects of all piece class
+Objects.obj_init(grid, screen)
 
 # main game loop
 running = True
@@ -194,17 +186,17 @@ while running:
         for j in range(8):
             grid[i][j].draw_box()
 
-    for i in range(len(pawn_list)):
-        pawn_list[i].show_pawn()
+    for i in range(len(Objects.pawn_list)):
+        Objects.pawn_list[i].show_pawn()
 
-    for i in range(len(rook_list)):
-        rook_list[i].show_rook()
-        knight_list[i].show_knight()
-        bishop_list[i].show_bishop()
+    for i in range(len(Objects.rook_list)):
+        Objects.rook_list[i].show_rook()
+        Objects.knight_list[i].show_knight()
+        Objects.bishop_list[i].show_bishop()
 
-    for i in range(len(king_list)):
-        king_list[i].show_king()
-        queen_list[i].show_queen()
+    for i in range(len(Objects.king_list)):
+        Objects.king_list[i].show_king()
+        Objects.queen_list[i].show_queen()
 
     create_board()
 
