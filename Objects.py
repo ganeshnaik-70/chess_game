@@ -12,6 +12,7 @@ rook_list = []
 knight_list = []
 king_list = []
 queen_list = []
+wkp, bkp = 0, 0
 
 # load all piece images
 black_pawn = pygame.image.load("images/black_pawn.png")
@@ -29,6 +30,8 @@ white_horse = pygame.image.load("images/white_horse.png")
 
 
 def obj_init(grid, screen):
+    global wkp, bkp
+
     for i in range(8):
         bpp = Pawn_piece.Pawn(10 + i * gap, 85, BLACK, black_pawn, grid, screen)
         wpp = Pawn_piece.White_pawn(10 + i * gap, 460, WHITE, white_pawn, grid, screen)
@@ -36,9 +39,9 @@ def obj_init(grid, screen):
         pawn_list.append(wpp)
 
     brp1 = Rook_piece.Rook(10, 10, BLACK, black_rook, grid, screen)
-    brp2 = Rook_piece.Rook(10+75*7, 10, BLACK, black_rook, grid, screen)
-    wrp1 = Rook_piece.Rook(10, 10+75*7, WHITE, white_rook, grid, screen)
-    wrp2 = Rook_piece.Rook(10+75*7, 10+75*7, WHITE, white_rook, grid, screen)
+    brp2 = Rook_piece.Rook(10 + 75 * 7, 10, BLACK, black_rook, grid, screen)
+    wrp1 = Rook_piece.Rook(10, 10 + 75 * 7, WHITE, white_rook, grid, screen)
+    wrp2 = Rook_piece.Rook(10 + 75 * 7, 10 + 75 * 7, WHITE, white_rook, grid, screen)
     rook_list.append(brp1)
     rook_list.append(brp2)
     rook_list.append(wrp1)
@@ -46,17 +49,17 @@ def obj_init(grid, screen):
 
     bkp1 = Knight_piece.Knight(10 + 75, 10, BLACK, black_horse, grid, screen)
     bkp2 = Knight_piece.Knight(10 + 75 * 6, 10, BLACK, black_horse, grid, screen)
-    wkp1 = Knight_piece.Knight(10 + 75, 10+75*7, WHITE, white_horse, grid, screen)
-    wkp2 = Knight_piece.Knight(10 + 75*6, 10+75*7, WHITE, white_horse, grid, screen)
+    wkp1 = Knight_piece.Knight(10 + 75, 10 + 75 * 7, WHITE, white_horse, grid, screen)
+    wkp2 = Knight_piece.Knight(10 + 75 * 6, 10 + 75 * 7, WHITE, white_horse, grid, screen)
     knight_list.append(bkp1)
     knight_list.append(bkp2)
     knight_list.append(wkp1)
     knight_list.append(wkp2)
 
-    bbp1 = Bishop_piece.Bishop(10+75*2, 10, BLACK, black_bishop, grid, screen)
-    bbp2 = Bishop_piece.Bishop(10+75*5, 10, BLACK, black_bishop, grid, screen)
-    wbp1 = Bishop_piece.Bishop(10+75*2, 10+75*7, WHITE, white_bishop, grid, screen)
-    wbp2 = Bishop_piece.Bishop(10+75*5, 10+75*7, WHITE, white_bishop, grid, screen)
+    bbp1 = Bishop_piece.Bishop(10 + 75 * 2, 10, BLACK, black_bishop, grid, screen)
+    bbp2 = Bishop_piece.Bishop(10 + 75 * 5, 10, BLACK, black_bishop, grid, screen)
+    wbp1 = Bishop_piece.Bishop(10 + 75 * 2, 10 + 75 * 7, WHITE, white_bishop, grid, screen)
+    wbp2 = Bishop_piece.Bishop(10 + 75 * 5, 10 + 75 * 7, WHITE, white_bishop, grid, screen)
     bishop_list.append(bbp1)
     bishop_list.append(bbp2)
     bishop_list.append(wbp1)
@@ -67,7 +70,7 @@ def obj_init(grid, screen):
     queen_list.append(bqp)
     queen_list.append(wqp)
 
-    bkp = King_piece.King(10+75*4, 10, BLACK, black_king, grid, screen)
-    wkp = King_piece.King(10+75*4, 10+75*7, WHITE, white_king, grid, screen)
+    bkp = King_piece.King(10 + 75 * 4, 10, BLACK, black_king, grid, screen)
+    wkp = King_piece.King(10 + 75 * 4, 10 + 75 * 7, WHITE, white_king, grid, screen)
     king_list.append(bkp)
     king_list.append(wkp)
