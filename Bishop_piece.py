@@ -34,6 +34,7 @@ class Bishop:
         self.clor = clr
         self.bishop_img = img
         self.screen = win
+        self.piece_name = "bishop"
 
     # To show a bishop on board
     def show_bishop(self):

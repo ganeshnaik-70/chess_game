@@ -34,6 +34,7 @@ class Queen:
         self.clor = clr
         self.queen_img = img
         self.screen = win
+        self.piece_name = "queen"
 
     # To show a queen on board
     def show_queen(self):

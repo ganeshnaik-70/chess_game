@@ -38,6 +38,7 @@ class Rook:
         self.clor = clr
         self.rook_img = img
         self.screen = win
+        self.piece_name = "rook"
 
     # To show a rook on board
     def show_rook(self):

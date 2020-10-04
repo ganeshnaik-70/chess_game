@@ -34,6 +34,7 @@ class King:
         self.clor = clr
         self.king_img = img
         self.screen = win
+        self.piece_name = "king"
 
     # To show a king on board
     def show_king(self):

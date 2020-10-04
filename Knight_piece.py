@@ -34,6 +34,7 @@ class Knight:
         self.clor = clr
         self.knight_img = img
         self.screen = win
+        self.piece_name = "knight"
 
     # To show a pawn on board
     def show_knight(self):

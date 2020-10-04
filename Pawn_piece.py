@@ -54,6 +54,7 @@ class Pawn:
         self.clor = clr
         self.pawn_img = img
         self.screen = win
+        self.piece_name = "pawn"
 
     # To show a pawn on board
     def show_pawn(self):
