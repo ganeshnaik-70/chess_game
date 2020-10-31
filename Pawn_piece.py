@@ -55,6 +55,8 @@ class Pawn:
         self.pawn_img = img
         self.screen = win
         self.piece_name = "pawn"
+        self.black_pawn_attacked_spot = []
+        self.white_pawn_attacked_spot = []
 
     # To show a pawn on board
     def show_pawn(self):
@@ -93,6 +95,41 @@ class Pawn:
         self.row = self.py // gap
         self.col = self.px // gap
         make_box(grid)
+
+    def attacked_spot(self, grid):
+        if not self.eliminated:
+            if 0 <= self.col <= 7:
+                self.black_pawn_attacked_spot.clear()
+                self.white_pawn_attacked_spot.clear()
+                if self.clor == WHITE:
+                    if self.row > 0:
+                        if self.col != 0:
+                            if grid[self.row - 1][self.col - 1].piece is None:
+                                self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col - 1])
+                            elif grid[self.row - 1][self.col - 1].piece.clor != WHITE:
+                                self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col - 1])
+                        if self.col != 7:
+                            if grid[self.row - 1][self.col + 1].piece is None:
+                                self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col + 1])
+                            elif grid[self.row - 1][self.col + 1].piece.clor != WHITE:
+                                self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col + 1])
+                    return self.white_pawn_attacked_spot
+
+                if self.clor == BLACK:
+                    if self.row < 7:
+                        if self.col != 0:
+                            if grid[self.row + 1][self.col - 1].piece is None:
+                                self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col - 1])
+                            elif grid[self.row + 1][self.col - 1].piece.clor != BLACK:
+                                self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col - 1])
+                        if self.col != 7:
+                            if grid[self.row + 1][self.col + 1].piece is None:
+                                self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col + 1])
+                            elif grid[self.row + 1][self.col + 1].piece.clor != BLACK:
+                                self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col + 1])
+                    return self.black_pawn_attacked_spot
+        else:
+            return []
 
 
 # class for White pawn

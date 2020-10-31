@@ -23,6 +23,25 @@ def eliminate(row, col, grid):
 
 
 # class for a Queen piece
+def func(row, col, grid, dirt, func_name):
+    if dirt == "right_d":
+        func_name(row + 1, col + 1, grid, "right_d")
+    elif dirt == "left_d":
+        func_name(row + 1, col - 1, grid, "left_d")
+    elif dirt == "right_u":
+        func_name(row - 1, col + 1, grid, "right_u")
+    elif dirt == "left_u":
+        func_name(row - 1, col - 1, grid, "left_u")
+    elif dirt == "front":
+        func_name(row + 1, col, grid, "front")
+    elif dirt == "back":
+        func_name(row - 1, col, grid, "back")
+    elif dirt == "left":
+        func_name(row, col - 1, grid, "left")
+    elif dirt == "right":
+        func_name(row, col + 1, grid, "right")
+
+
 class Queen:
     def __init__(self, p_x, p_y, clr, img, grid, win):
         self.px = p_x
@@ -35,6 +54,9 @@ class Queen:
         self.queen_img = img
         self.screen = win
         self.piece_name = "queen"
+        self.atk_spot = []
+        self.white_queen_attacked_spot = []
+        self.black_queen_attacked_spot = []
 
     # To show a queen on board
     def show_queen(self):
@@ -158,3 +180,46 @@ class Queen:
             return True
         else:
             return False
+
+    def attacked_spot(self, grid):
+        if not self.eliminated:
+            self.atk_spot.clear()
+            self.atk_spot_queen(self.row + 1, self.col + 1, grid, "right_d")
+            self.atk_spot_queen(self.row + 1, self.col - 1, grid, "left_d")
+            self.atk_spot_queen(self.row - 1, self.col + 1, grid, "right_u")
+            self.atk_spot_queen(self.row - 1, self.col - 1, grid, "left_u")
+            self.atk_spot_queen(self.row + 1, self.col, grid, "front")
+            self.atk_spot_queen(self.row - 1, self.col, grid, "back")
+            self.atk_spot_queen(self.row, self.col - 1, grid, "left")
+            self.atk_spot_queen(self.row, self.col + 1, grid, "right")
+            if self.clor == WHITE:
+                self.white_queen_attacked_spot.clear()
+                self.white_queen_attacked_spot = self.atk_spot.copy()
+                return self.white_queen_attacked_spot
+            elif self.clor == BLACK:
+                self.black_queen_attacked_spot.clear()
+                self.black_queen_attacked_spot = self.atk_spot.copy()
+                return self.black_queen_attacked_spot
+        else:
+            return []
+
+    def atk_spot_queen(self, row, col, grid, dirt):
+        if 0 <= row <= 7 and 0 <= col <= 7:
+            if grid[row][col].piece is None:
+                self.atk_spot.append(grid[row][col])
+                func(row, col, grid, dirt, self.atk_spot_queen)
+            elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
+                self.atk_spot.append(grid[row][col])
+                if grid[row][col].piece.piece_name == "king":
+                    self.atk_spot.append([])
+                    func(row, col, grid, dirt, self.after_king_atk_spot)
+        else:
+            return
+
+    def after_king_atk_spot(self, row, col, grid, dirt):
+        if 0 <= row <= 7 and 0 <= col <= 7:
+            if grid[row][col].piece is None:
+                self.atk_spot[-1].append(grid[row][col])
+                func(row, col, grid, dirt, self.after_king_atk_spot)
+        else:
+            return

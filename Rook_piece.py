@@ -39,6 +39,9 @@ class Rook:
         self.rook_img = img
         self.screen = win
         self.piece_name = "rook"
+        self.atk_spot = []
+        self.black_rook_attacked_spot = []
+        self.white_rook_attacked_spot = []
 
     # To show a rook on board
     def show_rook(self):
@@ -51,18 +54,6 @@ class Rook:
         self.back_move(row, col, grid)
         self.left_move(row, col, grid)
         self.right_move(row, col, grid)
-        for obj in self.front_list:
-            obj.clr = YELLOW
-        for obj in self.back_list:
-            obj.clr = YELLOW
-        for obj in self.left_list:
-            obj.clr = YELLOW
-        for obj in self.right_list:
-            obj.clr = YELLOW
-        self.front_list.clear()
-        self.back_list.clear()
-        self.left_list.clear()
-        self.right_list.clear()
 
     # To check for rooks front moves
     def front_move(self, row, col, grid):
@@ -70,7 +61,7 @@ class Rook:
             return
         else:
             if grid[row + 1][col].piece is None:
-                self.front_list.append(grid[row + 1][col])
+                grid[row + 1][col].clr = YELLOW
                 self.front_move(row + 1, col, grid)
             elif grid[row + 1][col].piece is not None and self.check_opponent(grid[row + 1][col].piece.clor):
                 grid[row + 1][col].clr = RED
@@ -84,7 +75,7 @@ class Rook:
             return
         else:
             if grid[row - 1][col].piece is None:
-                self.back_list.append(grid[row - 1][col])
+                grid[row - 1][col].clr = YELLOW
                 self.back_move(row - 1, col, grid)
             elif grid[row - 1][col].piece is not None and self.check_opponent(grid[row - 1][col].piece.clor):
                 grid[row - 1][col].clr = RED
@@ -98,7 +89,7 @@ class Rook:
             return
         else:
             if grid[row][col - 1].piece is None:
-                self.left_list.append(grid[row][col - 1])
+                grid[row][col - 1].clr = YELLOW
                 self.left_move(row, col - 1, grid)
             elif grid[row][col - 1].piece is not None and self.check_opponent(grid[row][col - 1].piece.clor):
                 grid[row][col - 1].clr = RED
@@ -112,7 +103,7 @@ class Rook:
             return
         else:
             if grid[row][col + 1].piece is None:
-                self.right_list.append(grid[row][col + 1])
+                grid[row][col + 1].clr = YELLOW
                 self.right_move(row, col + 1, grid)
             elif grid[row][col + 1].piece is not None and self.check_opponent(grid[row][col + 1].piece.clor):
                 grid[row][col + 1].clr = RED
@@ -138,3 +129,41 @@ class Rook:
             return True
         else:
             return False
+
+    def attacked_spot(self, grid):
+        if not self.eliminated:
+            self.atk_spot.clear()
+            self.atk_spot_rook(self.row + 1, self.col, grid, "front")
+            self.atk_spot_rook(self.row - 1, self.col, grid, "back")
+            self.atk_spot_rook(self.row, self.col - 1, grid, "left")
+            self.atk_spot_rook(self.row, self.col + 1, grid, "right")
+            if self.clor == WHITE:
+                self.white_rook_attacked_spot.clear()
+                self.white_rook_attacked_spot = self.atk_spot.copy()
+                return self.white_rook_attacked_spot
+            elif self.clor == BLACK:
+                self.black_rook_attacked_spot.clear()
+                self.black_rook_attacked_spot = self.atk_spot.copy()
+                return self.black_rook_attacked_spot
+        else:
+            return []
+
+    def atk_spot_rook(self, row, col, grid, move):
+        if row > 7 or row < 0 or col < 0 or col > 7:
+            return
+        else:
+            if grid[row][col].piece is None:
+                self.atk_spot.append(grid[row][col])
+                if move == "front":
+                    self.atk_spot_rook(row + 1, col, grid, "front")
+                elif move == "back":
+                    self.atk_spot_rook(row - 1, col, grid, "back")
+                elif move == "left":
+                    self.atk_spot_rook(row, col - 1, grid, "left")
+                elif move == "right":
+                    self.atk_spot_rook(row, col + 1, grid, "right")
+            elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
+                self.atk_spot.append(grid[row][col])
+                return
+            else:
+                return

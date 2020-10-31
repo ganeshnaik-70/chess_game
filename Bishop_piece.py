@@ -35,6 +35,9 @@ class Bishop:
         self.bishop_img = img
         self.screen = win
         self.piece_name = "bishop"
+        self.atk_spot = []
+        self.black_bishop_attacked_spot = []
+        self.white_bishop_attacked_spot = []
 
     # To show a bishop on board
     def show_bishop(self):
@@ -110,3 +113,38 @@ class Bishop:
             return True
         else:
             return False
+
+    def attacked_spot(self, grid):
+        if not self.eliminated:
+            self.atk_spot.clear()
+            self.atk_spot_bishop(self.row + 1, self.col + 1, grid, "right_d")
+            self.atk_spot_bishop(self.row + 1, self.col - 1, grid, "left_d")
+            self.atk_spot_bishop(self.row - 1, self.col + 1, grid, "right_u")
+            self.atk_spot_bishop(self.row - 1, self.col - 1, grid, "left_u")
+            if self.clor == WHITE:
+                self.white_bishop_attacked_spot.clear()
+                self.white_bishop_attacked_spot = self.atk_spot.copy()
+                return self.white_bishop_attacked_spot
+            elif self.clor == BLACK:
+                self.black_bishop_attacked_spot.clear()
+                self.black_bishop_attacked_spot = self.atk_spot.copy()
+                return self.black_bishop_attacked_spot
+        else:
+            return []
+
+    def atk_spot_bishop(self, row, col, grid, dirt):
+        if 0 <= row <= 7 and 0 <= col <= 7:
+            if grid[row][col].piece is None:
+                self.atk_spot.append(grid[row][col])
+                if dirt == "right_d":
+                    self.atk_spot_bishop(row + 1, col + 1, grid, "right_d")
+                elif dirt == "left_d":
+                    self.atk_spot_bishop(row + 1, col - 1, grid, "left_d")
+                elif dirt == "right_u":
+                    self.atk_spot_bishop(row - 1, col + 1, grid, "right_u")
+                elif dirt == "left_u":
+                    self.atk_spot_bishop(row - 1, col - 1, grid, "left_u")
+            elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
+                self.atk_spot.append(grid[row][col])
+        else:
+            return

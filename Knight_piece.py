@@ -35,6 +35,9 @@ class Knight:
         self.knight_img = img
         self.screen = win
         self.piece_name = "knight"
+        self.atk_spot = []
+        self.black_knight_attacked_spot = []
+        self.white_knight_attacked_spot = []
 
     # To show a pawn on board
     def show_knight(self):
@@ -78,3 +81,34 @@ class Knight:
             return True
         else:
             return False
+
+    def attacked_spot(self, grid):
+        if not self.eliminated:
+            self.atk_spot.clear()
+            self.atk_spot_knight(self.row - 2, self.col - 1, grid)
+            self.atk_spot_knight(self.row - 2, self.col + 1, grid)
+            self.atk_spot_knight(self.row + 2, self.col - 1, grid)
+            self.atk_spot_knight(self.row + 2, self.col + 1, grid)
+            self.atk_spot_knight(self.row - 1, self.col - 2, grid)
+            self.atk_spot_knight(self.row + 1, self.col - 2, grid)
+            self.atk_spot_knight(self.row - 1, self.col + 2, grid)
+            self.atk_spot_knight(self.row + 1, self.col + 2, grid)
+            if self.clor == WHITE:
+                self.white_knight_attacked_spot.clear()
+                self.white_knight_attacked_spot = self.atk_spot.copy()
+                return self.white_knight_attacked_spot
+            elif self.clor == BLACK:
+                self.black_knight_attacked_spot.clear()
+                self.black_knight_attacked_spot = self.atk_spot.copy()
+                return self.black_knight_attacked_spot
+        else:
+            return []
+
+    def atk_spot_knight(self, row, col, grid):
+        if 0 <= row <= 7 and 0 <= col <= 7:
+            if grid[row][col].piece is None:
+                self.atk_spot.append(grid[row][col])
+            elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
+                self.atk_spot.append(grid[row][col])
+        else:
+            return
