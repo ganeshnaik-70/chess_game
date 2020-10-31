@@ -108,10 +108,14 @@ class Pawn:
                                 self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col - 1])
                             elif grid[self.row - 1][self.col - 1].piece.clor != WHITE:
                                 self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col - 1])
+                            else:
+                                self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col - 1])
                         if self.col != 7:
                             if grid[self.row - 1][self.col + 1].piece is None:
                                 self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col + 1])
                             elif grid[self.row - 1][self.col + 1].piece.clor != WHITE:
+                                self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col + 1])
+                            else:
                                 self.white_pawn_attacked_spot.append(grid[self.row - 1][self.col + 1])
                     return self.white_pawn_attacked_spot
 
@@ -122,10 +126,14 @@ class Pawn:
                                 self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col - 1])
                             elif grid[self.row + 1][self.col - 1].piece.clor != BLACK:
                                 self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col - 1])
+                            else:
+                                self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col - 1])
                         if self.col != 7:
                             if grid[self.row + 1][self.col + 1].piece is None:
                                 self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col + 1])
                             elif grid[self.row + 1][self.col + 1].piece.clor != BLACK:
+                                self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col + 1])
+                            else:
                                 self.black_pawn_attacked_spot.append(grid[self.row + 1][self.col + 1])
                     return self.black_pawn_attacked_spot
         else:

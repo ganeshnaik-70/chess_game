@@ -213,6 +213,8 @@ class Queen:
                 if grid[row][col].piece.piece_name == "king":
                     self.atk_spot.append([])
                     func(row, col, grid, dirt, self.after_king_atk_spot)
+            else:
+                self.atk_spot.append(grid[row][col])
         else:
             return
 
@@ -220,6 +222,5 @@ class Queen:
         if 0 <= row <= 7 and 0 <= col <= 7:
             if grid[row][col].piece is None:
                 self.atk_spot[-1].append(grid[row][col])
-                func(row, col, grid, dirt, self.after_king_atk_spot)
         else:
             return

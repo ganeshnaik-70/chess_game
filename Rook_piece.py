@@ -164,6 +164,5 @@ class Rook:
                     self.atk_spot_rook(row, col + 1, grid, "right")
             elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
                 self.atk_spot.append(grid[row][col])
-                return
             else:
-                return
+                self.atk_spot.append(grid[row][col])

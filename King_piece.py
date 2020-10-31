@@ -1,3 +1,4 @@
+from chess_game_project import Objects
 # constant values
 gap = 75
 BLACK = (139, 69, 45)
@@ -109,4 +110,9 @@ class King:
             if grid[row][col].piece is None:
                 self.atk_spot.append(grid[row][col])
             elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
-                self.atk_spot.append(grid[row][col])
+                if self.clor == BLACK and grid[row][col].piece.clor == WHITE:
+                    if grid[row][col] not in Objects.white_atk_spot(grid):
+                        self.atk_spot.append(grid[row][col])
+                elif self.clor == WHITE and grid[row][col].piece.clor == BLACK:
+                    if grid[row][col] not in Objects.black_atk_spot(grid):
+                        self.atk_spot.append(grid[row][col])

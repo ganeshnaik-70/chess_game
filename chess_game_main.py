@@ -97,7 +97,7 @@ def eliminate(row, col, grid):
 def king_escape(grid, piece):
     c = 0
     if piece == "white":
-        BPAS = Objects.black_atk_spot(grid)
+        BPAS = Objects.black_spot(grid)
         wkp = Objects.get_whk_king_pos(grid)
         for i in wkp:
             if i in BPAS:

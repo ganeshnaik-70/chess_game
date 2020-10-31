@@ -110,5 +110,7 @@ class Knight:
                 self.atk_spot.append(grid[row][col])
             elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
                 self.atk_spot.append(grid[row][col])
+            else:
+                self.atk_spot.append(grid[row][col])
         else:
             return

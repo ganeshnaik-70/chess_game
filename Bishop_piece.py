@@ -146,5 +146,7 @@ class Bishop:
                     self.atk_spot_bishop(row - 1, col - 1, grid, "left_u")
             elif grid[row][col].piece is not None and self.check_opponent(grid[row][col].piece.clor):
                 self.atk_spot.append(grid[row][col])
+            else:
+                self.atk_spot.append(grid[row][col])
         else:
             return
