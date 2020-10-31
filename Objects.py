@@ -74,3 +74,64 @@ def obj_init(grid, screen):
     wkp = King_piece.King(10 + 75 * 4, 10 + 75 * 7, WHITE, white_king, grid, screen)
     king_list.append(bkp)
     king_list.append(wkp)
+
+
+def get_blk_king_pos(grid):
+    bks = king_list[0].attacked_spot(grid)
+    return bks
+
+
+def get_whk_king_pos(grid):
+    wks = king_list[1].attacked_spot(grid)
+    return wks
+
+
+def black_atk_spot(grid):
+    bps = queen_list[0].attacked_spot(grid) + bishop_list[0].attacked_spot(grid) + bishop_list[1].attacked_spot(grid) + \
+          king_list[0].attacked_spot(grid) + knight_list[0].attacked_spot(grid) + knight_list[1].attacked_spot(grid) + \
+          rook_list[0].attacked_spot(grid) + rook_list[1].attacked_spot(grid)
+    for i in range(len(pawn_list)):
+        if i % 2 == 0:
+            bps = bps + pawn_list[i].attacked_spot(grid)
+    return bps
+
+
+def blackP_atk_spot(grid):
+    bps = queen_list[0].attacked_spot(grid) + bishop_list[0].attacked_spot(grid) + bishop_list[1].attacked_spot(grid) + \
+          knight_list[0].attacked_spot(grid) + knight_list[1].attacked_spot(grid) + rook_list[0].attacked_spot(grid) + \
+          rook_list[1].attacked_spot(grid)
+
+    return bps
+
+
+def white_atk_spot(grid):
+    bps = queen_list[1].attacked_spot(grid)[:-1] if type(queen_list[1].attacked_spot(grid)[-1]) == type([]) \
+        else queen_list[1].attacked_spot(grid) + bishop_list[2].attacked_spot(grid) + bishop_list[3].attacked_spot(
+        grid) + king_list[1].attacked_spot(grid) + knight_list[2].attacked_spot(grid) + knight_list[3].attacked_spot(
+        grid) + rook_list[2].attacked_spot(grid) + rook_list[3].attacked_spot(grid)
+    for i in range(len(pawn_list)):
+        if i % 2 != 0:
+            bps = bps + pawn_list[i].attacked_spot(grid)
+    return bps
+
+
+def whiteP_atk_spot(grid):
+    bps = queen_list[1].attacked_spot(grid) + bishop_list[2].attacked_spot(grid) + bishop_list[3].attacked_spot(grid) + \
+          knight_list[2].attacked_spot(grid) + knight_list[3].attacked_spot(grid) + rook_list[2].attacked_spot(grid) + \
+          rook_list[3].attacked_spot(grid)
+
+    return bps
+
+
+def white_spot(grid):
+    q_atk_spot = queen_list[1].attacked_spot(grid)[:-1] if type(queen_list[1].attacked_spot(grid)[-1]) == type([]) \
+        else queen_list[1].attacked_spot(grid)
+    for i in queen_list[1].attacked_spot(grid)[-1]:
+        q_atk_spot.append(i)
+    bps = q_atk_spot + bishop_list[2].attacked_spot(grid) + bishop_list[3].attacked_spot(
+        grid) + king_list[1].attacked_spot(grid) + knight_list[2].attacked_spot(grid) + knight_list[3].attacked_spot(
+        grid) + rook_list[2].attacked_spot(grid) + rook_list[3].attacked_spot(grid)
+    for i in range(len(pawn_list)):
+        if i % 2 != 0:
+            bps = bps + pawn_list[i].attacked_spot(grid)
+    return bps
