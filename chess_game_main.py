@@ -2,6 +2,7 @@ import pygame
 import os
 from chess_game_project import Objects
 from chess_game_project import Threat_checking
+from chess_game_project import Block_threat
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (700, 70)
 # initialize pygame module
@@ -18,6 +19,9 @@ YELLOW = (255, 255, 0)
 piece_list = []
 white_move = True
 black_move = False
+black_check = False
+white_check = False
+running = True
 
 # set the display screen
 screen = pygame.display.set_mode((WIDTH, WIDTH + E_WIDTH))
@@ -90,9 +94,77 @@ def eliminate(row, col, grid):
     grid[row][col].piece = None
 
 
+def king_escape(grid, piece):
+    c = 0
+    if piece == "white":
+        BPAS = Objects.black_atk_spot(grid)
+        wkp = Objects.get_whk_king_pos(grid)
+        for i in wkp:
+            if i in BPAS:
+                c += 1
+                if c == len(wkp):
+                    return False
+            else:
+                return True
+    if piece == "black":
+        WPAS = Objects.white_spot(grid)
+        bkp = Objects.get_blk_king_pos(grid)
+        for i in bkp:
+            if i in WPAS:
+                c += 1
+                if c == len(bkp):
+                    return False
+            else:
+                return True
+
+
+def check_for_capturing(grid, pis):
+    piece = piece_list[0]
+    r, c = piece.row, piece.col
+    if pis == "white":
+        if grid[r][c] not in Objects.white_atk_spot(grid):
+            return True
+        else:
+            return False
+    if pis == "black":
+        if grid[r][c] not in Objects.black_atk_spot(grid):
+            return True
+        else:
+            return False
+
+
+def block_threaten(grid, pis):
+    piece = piece_list[0]
+    c = 0
+    if piece.piece_name == "rook" or piece.piece_name == "bishop" or piece.piece_name == "queen":
+        if pis == "white":
+            lis = Block_threat.block_threat(grid, piece, Objects.wkp)
+            WPAS = Objects.whiteP_atk_spot(grid)
+            for i in lis:
+                if i not in WPAS:
+                    c += 1
+                    if c == len(lis):
+                        return True
+                else:
+                    return False
+        if pis == "black":
+            lis = Block_threat.block_threat(grid, piece, Objects.bkp)
+            BPAS = Objects.blackP_atk_spot(grid)
+            for i in lis:
+                if i not in BPAS:
+                    c += 1
+                    if c == len(lis):
+                        return True
+                else:
+                    return False
+    else:
+        return True
+
+
 # check for piece to move
 def check_piece_move(grid, row, col):
-    global white_move, black_move
+    global running
+    global white_move, black_move, black_check, white_check
     if grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         make_box(grid)
         piece_list.clear()
@@ -103,15 +175,48 @@ def check_piece_move(grid, row, col):
         Threat_checking.final_pos.clear()
         Threat_checking.start_pos.append(
             [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
-                else piece_list[0].row, piece_list[0].col])
+            else piece_list[0].row, piece_list[0].col])
         piece_list[0].move(row, col, grid, collision=False)
         Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
         if white_move:
             if Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE, grid):
                 Threat_checking.take_back(grid)
+            else:
+                white_check = False
+            if not Threat_checking.back and Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK,
+                                                                             grid):
+                black_check = True
+                if not king_escape(grid, "black"):
+                    if check_for_capturing(grid, "black"):
+                        if block_threaten(grid, "black"):
+                            print("Bstoped")
+                            running = False
+                        else:
+                            print("Blittel safe")
+                    else:
+                        print("Bsafe")
+                else:
+                    print("Byour safe")
         else:
             if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
                 Threat_checking.take_back(grid)
+            else:
+                black_check = False
+            if not Threat_checking.back and Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE,
+                                                                             grid):
+                white_check = True
+                if not king_escape(grid, "white"):
+                    if check_for_capturing(grid, "white"):
+                        if block_threaten(grid, "white"):
+                            print("Wstoped")
+                            running = False
+                        else:
+                            print("Wlittel safe")
+                    else:
+                        print("Wsafe")
+                else:
+                    print("Wyour safe")
+
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
             black_move = True
@@ -125,11 +230,13 @@ def check_piece_move(grid, row, col):
         if grid[row][col].piece is not None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
             if len(piece_list) == 0:
                 grid[row][col].piece.check_move(row, col, grid)
+                grid[row][col].piece.attacked_spot(grid)
                 piece_list.append(grid[row][col].piece)
             else:
                 piece_list.pop()
                 make_box(grid)
                 grid[row][col].piece.check_move(row, col, grid)
+                grid[row][col].piece.attacked_spot(grid)
                 piece_list.append(grid[row][col].piece)
 
     elif grid[row][col].piece is not None and grid[row][col].clr == RED:
@@ -139,15 +246,48 @@ def check_piece_move(grid, row, col):
         last_piece = grid[row][col].piece
         Threat_checking.start_pos.append(
             [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
-                else piece_list[0].row, piece_list[0].col])
+            else piece_list[0].row, piece_list[0].col])
         piece_list[0].move(row, col, grid, collision=True)
         Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
         if white_move:
             if Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE, grid):
                 Threat_checking.take_back(grid)
+            else:
+                white_check = False
+            if not Threat_checking.back and Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK,
+                                                                             grid):
+                black_check = True
+                if not king_escape(grid, "black"):
+                    if check_for_capturing(grid, "black"):
+                        if block_threaten(grid, "black"):
+                            print("BHstoped")
+                            running = False
+                        else:
+                            print("BHlittel safe")
+                    else:
+                        print("BHsafe")
+                else:
+                    print("BHyour safe")
         else:
             if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
                 Threat_checking.take_back(grid)
+            else:
+                black_check = False
+            if not Threat_checking.back and Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE,
+                                                                             grid):
+                white_check = True
+                if not king_escape(grid, "white"):
+                    if check_for_capturing(grid, "white"):
+                        if block_threaten(grid, "white"):
+                            print("WHstoped")
+                            running = False
+                        else:
+                            print("WHlittel safe")
+                    else:
+                        print("WHsafe")
+                else:
+                    print("WHyour safe")
+
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
             black_move = True
@@ -164,7 +304,6 @@ def check_piece_move(grid, row, col):
 Objects.obj_init(grid, screen)
 
 # main game loop
-running = True
 while running:
     # fill the screen with black colour
     screen.fill((255, 255, 255))
