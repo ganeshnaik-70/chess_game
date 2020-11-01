@@ -31,6 +31,13 @@ pygame.display.set_caption("Chess Game")
 ico = pygame.image.load("images/horse.png")
 # set the icon image for screen
 pygame.display.set_icon(ico)
+font = pygame.font.Font("freesansbold.ttf", 35)
+Num_font = pygame.font.Font("freesansbold.ttf", 30)
+chk_font = pygame.font.Font("freesansbold.ttf", 30)
+move = "white move"
+pis = " "
+black_crown = pygame.image.load("images/black_crown.png")
+white_crown = pygame.image.load("images/white_crown.png")
 
 
 # class for box in chess board
@@ -163,7 +170,7 @@ def block_threaten(grid, pis):
 
 # check for piece to move
 def check_piece_move(grid, row, col):
-    global running
+    global running, move, pis
     global white_move, black_move, black_check, white_check
     if grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         make_box(grid)
@@ -175,7 +182,7 @@ def check_piece_move(grid, row, col):
         Threat_checking.final_pos.clear()
         Threat_checking.start_pos.append(
             [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
-             else piece_list[0].row, piece_list[0].col])
+            else piece_list[0].row, piece_list[0].col])
         piece_list[0].move(row, col, grid, collision=False)
         Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
         if white_move:
@@ -183,9 +190,11 @@ def check_piece_move(grid, row, col):
                 Threat_checking.take_back(grid)
             else:
                 white_check = False
+                pis = " "
             if not Threat_checking.back and Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK,
                                                                              grid):
                 black_check = True
+                pis = "black"
                 if not king_escape(grid, "black"):
                     if check_for_capturing(grid, "black"):
                         if block_threaten(grid, "black"):
@@ -195,9 +204,11 @@ def check_piece_move(grid, row, col):
                 Threat_checking.take_back(grid)
             else:
                 black_check = False
+                pis = " "
             if not Threat_checking.back and Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE,
                                                                              grid):
                 white_check = True
+                pis = "white"
                 if not king_escape(grid, "white"):
                     if check_for_capturing(grid, "white"):
                         if block_threaten(grid, "white"):
@@ -206,9 +217,11 @@ def check_piece_move(grid, row, col):
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
             black_move = True
+            move = "black move"
         elif piece_list[0].clor == BLACK and not Threat_checking.back:
             white_move = True
             black_move = False
+            move = "white move"
         else:
             Threat_checking.back = False
 
@@ -232,7 +245,7 @@ def check_piece_move(grid, row, col):
         last_piece = grid[row][col].piece
         Threat_checking.start_pos.append(
             [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
-             else piece_list[0].row, piece_list[0].col])
+            else piece_list[0].row, piece_list[0].col])
         piece_list[0].move(row, col, grid, collision=True)
         Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
         if white_move:
@@ -240,9 +253,11 @@ def check_piece_move(grid, row, col):
                 Threat_checking.take_back(grid)
             else:
                 white_check = False
+                pis = " "
             if not Threat_checking.back and Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK,
                                                                              grid):
                 black_check = True
+                pis = "black"
                 if not king_escape(grid, "black"):
                     if check_for_capturing(grid, "black"):
                         if block_threaten(grid, "black"):
@@ -252,9 +267,11 @@ def check_piece_move(grid, row, col):
                 Threat_checking.take_back(grid)
             else:
                 black_check = False
+                pis = " "
             if not Threat_checking.back and Threat_checking.check_for_threat(Objects.wkp.row, Objects.wkp.col, WHITE,
                                                                              grid):
                 white_check = True
+                pis = "white"
                 if not king_escape(grid, "white"):
                     if check_for_capturing(grid, "white"):
                         if block_threaten(grid, "white"):
@@ -263,9 +280,11 @@ def check_piece_move(grid, row, col):
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
             black_move = True
+            move = "black move"
         elif piece_list[0].clor == BLACK and not Threat_checking.back:
             white_move = True
             black_move = False
+            move = "white move"
         else:
             last_piece.eliminated = False
             grid[row][col].piece = last_piece
@@ -274,6 +293,24 @@ def check_piece_move(grid, row, col):
 
 # initialize objects of all piece class
 Objects.obj_init(grid, screen)
+
+
+def show_eliminated_piece():
+    c = 0
+    e = 0
+    for obj in Objects.white_piece:
+        if obj.eliminated:
+            c += 1
+    screen.blit(white_crown, (460, 610))
+    ele_wp = Num_font.render(str(c), True, (0, 0, 0))
+    screen.blit(ele_wp, (490, 610))
+    for obj in Objects.black_piece:
+        if obj.eliminated:
+            e += 1
+    screen.blit(black_crown, (530, 610))
+    ele_bp = Num_font.render(str(e), True, (0, 0, 0))
+    screen.blit(ele_bp, (560, 610))
+
 
 # main game loop
 while running:
@@ -310,6 +347,13 @@ while running:
         Objects.queen_list[i].show_queen()
 
     create_board()
+    mv_font = font.render(move, True, (125, 55, 200))
+    screen.blit(mv_font, (200, 605))
+    pygame.draw.line(screen, BLACK, (0, 650), (WIDTH, 650), 4)
+    ck_font = chk_font.render("check for "+pis+" king", True, (255, 0, 0))
+    if pis != " ":
+        screen.blit(ck_font, (150, 660))
+    show_eliminated_piece()
 
     # update the display screen
     pygame.display.update()
