@@ -175,7 +175,7 @@ def check_piece_move(grid, row, col):
         Threat_checking.final_pos.clear()
         Threat_checking.start_pos.append(
             [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
-            else piece_list[0].row, piece_list[0].col])
+             else piece_list[0].row, piece_list[0].col])
         piece_list[0].move(row, col, grid, collision=False)
         Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
         if white_move:
@@ -232,7 +232,7 @@ def check_piece_move(grid, row, col):
         last_piece = grid[row][col].piece
         Threat_checking.start_pos.append(
             [piece_list[0].row, piece_list[0].col, piece_list[0].first_move if piece_list[0].piece_name == "pawn"
-            else piece_list[0].row, piece_list[0].col])
+             else piece_list[0].row, piece_list[0].col])
         piece_list[0].move(row, col, grid, collision=True)
         Threat_checking.final_pos.append([piece_list[0].row, piece_list[0].col, piece_list[0]])
         if white_move:
