@@ -32,7 +32,14 @@ white_horse = pygame.image.load("images/white_horse.png")
 
 
 def obj_init(grid, screen):
-    global wkp, bkp, black_piece, white_piece
+    global wkp, bkp, black_piece, white_piece, pawn_list, bishop_list, rook_list, knight_list, king_list, queen_list
+
+    pawn_list.clear()
+    bishop_list.clear()
+    rook_list.clear()
+    knight_list.clear()
+    king_list.clear()
+    queen_list.clear()
 
     for i in range(8):
         bpp = Pawn_piece.Pawn(10 + i * gap, 85, BLACK, black_pawn, grid, screen)
