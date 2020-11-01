@@ -189,14 +189,7 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "black"):
                     if check_for_capturing(grid, "black"):
                         if block_threaten(grid, "black"):
-                            print("Bstoped")
                             running = False
-                        else:
-                            print("Blittel safe")
-                    else:
-                        print("Bsafe")
-                else:
-                    print("Byour safe")
         else:
             if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
                 Threat_checking.take_back(grid)
@@ -208,14 +201,7 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "white"):
                     if check_for_capturing(grid, "white"):
                         if block_threaten(grid, "white"):
-                            print("Wstoped")
                             running = False
-                        else:
-                            print("Wlittel safe")
-                    else:
-                        print("Wsafe")
-                else:
-                    print("Wyour safe")
 
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
@@ -260,14 +246,7 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "black"):
                     if check_for_capturing(grid, "black"):
                         if block_threaten(grid, "black"):
-                            print("BHstoped")
                             running = False
-                        else:
-                            print("BHlittel safe")
-                    else:
-                        print("BHsafe")
-                else:
-                    print("BHyour safe")
         else:
             if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
                 Threat_checking.take_back(grid)
@@ -279,14 +258,7 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "white"):
                     if check_for_capturing(grid, "white"):
                         if block_threaten(grid, "white"):
-                            print("WHstoped")
                             running = False
-                        else:
-                            print("WHlittel safe")
-                    else:
-                        print("WHsafe")
-                else:
-                    print("WHyour safe")
 
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
