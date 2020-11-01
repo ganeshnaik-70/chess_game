@@ -12,6 +12,8 @@ rook_list = []
 knight_list = []
 king_list = []
 queen_list = []
+black_piece = []
+white_piece = []
 wkp, bkp = 0, 0
 
 # load all piece images
@@ -30,7 +32,7 @@ white_horse = pygame.image.load("images/white_horse.png")
 
 
 def obj_init(grid, screen):
-    global wkp, bkp
+    global wkp, bkp, black_piece, white_piece
 
     for i in range(8):
         bpp = Pawn_piece.Pawn(10 + i * gap, 85, BLACK, black_pawn, grid, screen)
@@ -75,6 +77,33 @@ def obj_init(grid, screen):
     king_list.append(bkp)
     king_list.append(wkp)
 
+    white_piece.clear()
+    black_piece.clear()
+    for i in range(len(pawn_list)):
+        if i % 2 == 0:
+            black_piece.append(pawn_list[i])
+        if i % 2 != 0:
+            white_piece.append(pawn_list[i])
+    for i in range(len(rook_list)):
+        if i == 0:
+            black_piece.append(rook_list[i])
+            black_piece.append(rook_list[i+1])
+            black_piece.append(bishop_list[i])
+            black_piece.append(bishop_list[i+1])
+            black_piece.append(knight_list[i])
+            black_piece.append(knight_list[i+1])
+        if i == 2:
+            white_piece.append(rook_list[i])
+            white_piece.append(rook_list[i + 1])
+            white_piece.append(bishop_list[i])
+            white_piece.append(bishop_list[i + 1])
+            white_piece.append(knight_list[i])
+            white_piece.append(knight_list[i + 1])
+    black_piece.append(queen_list[0])
+    black_piece.append(king_list[0])
+    white_piece.append(queen_list[1])
+    white_piece.append(king_list[1])
+
 
 def get_blk_king_pos(grid):
     bks = king_list[0].attacked_spot(grid)
@@ -87,11 +116,14 @@ def get_whk_king_pos(grid):
 
 
 def black_spot(grid):
-    q_atk_spot = queen_list[0].attacked_spot(grid)[:-1] if isinstance(queen_list[0].attacked_spot(grid)[-1], list) \
-        else queen_list[0].attacked_spot(grid)
-    for i in queen_list[0].attacked_spot(grid)[-1] if isinstance(queen_list[0].attacked_spot(grid)[-1], list) else []:
-        q_atk_spot.append(i)
-    bps = q_atk_spot + bishop_list[0].attacked_spot(grid) + bishop_list[1].attacked_spot(grid) +\
+    q_p = []
+    for i in queen_list[0].attacked_spot(grid):
+        if not isinstance(i, list):
+            q_p.append(i)
+        else:
+            for j in i:
+                q_p.append(j)
+    bps = q_p + bishop_list[0].attacked_spot(grid) + bishop_list[1].attacked_spot(grid) +\
         king_list[0].attacked_spot(grid) + knight_list[0].attacked_spot(grid) + knight_list[1].attacked_spot(grid) + \
         rook_list[0].attacked_spot(grid) + rook_list[1].attacked_spot(grid)
     for i in range(len(pawn_list)):
@@ -101,8 +133,11 @@ def black_spot(grid):
 
 
 def black_atk_spot(grid):
-    bps = queen_list[0].attacked_spot(grid)[:-1] if isinstance(queen_list[0].attacked_spot(grid)[-1], list) else \
-        queen_list[0].attacked_spot(grid) + bishop_list[0].attacked_spot(grid) + bishop_list[1].attacked_spot(grid) + \
+    q_p = []
+    for i in queen_list[0].attacked_spot(grid):
+        if not isinstance(i, list):
+            q_p.append(i)
+    bps = q_p + bishop_list[0].attacked_spot(grid) + bishop_list[1].attacked_spot(grid) + \
         king_list[0].attacked_spot(grid) + knight_list[0].attacked_spot(grid) + knight_list[1].attacked_spot(grid) + \
         rook_list[0].attacked_spot(grid) + rook_list[1].attacked_spot(grid)
     for i in range(len(pawn_list)):
@@ -149,8 +184,6 @@ def white_spot(grid):
         else:
             for j in i:
                 q_p.append(j)
-    for i in q_p:
-        i.clr = (125, 55, 200)
     bps = q_p + bishop_list[2].attacked_spot(grid) + bishop_list[3].attacked_spot(grid) + \
         king_list[1].attacked_spot(grid) + knight_list[2].attacked_spot(grid) + knight_list[3].attacked_spot(grid) + \
         rook_list[2].attacked_spot(grid) + rook_list[3].attacked_spot(grid)
