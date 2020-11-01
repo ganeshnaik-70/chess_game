@@ -22,6 +22,8 @@ black_move = False
 black_check = False
 white_check = False
 running = True
+check_mate = False
+player = "None"
 
 # set the display screen
 screen = pygame.display.set_mode((WIDTH, WIDTH + E_WIDTH))
@@ -34,6 +36,7 @@ pygame.display.set_icon(ico)
 font = pygame.font.Font("freesansbold.ttf", 35)
 Num_font = pygame.font.Font("freesansbold.ttf", 30)
 chk_font = pygame.font.Font("freesansbold.ttf", 30)
+exit_font = pygame.font.Font("freesansbold.ttf", 20)
 move = "white move"
 pis = " "
 black_crown = pygame.image.load("images/black_crown.png")
@@ -170,7 +173,7 @@ def block_threaten(grid, pis):
 
 # check for piece to move
 def check_piece_move(grid, row, col):
-    global running, move, pis
+    global running, move, pis, check_mate, player
     global white_move, black_move, black_check, white_check
     if grid[row][col].piece is None and (grid[row][col].clr == BLACK or grid[row][col].clr == WHITE):
         make_box(grid)
@@ -198,7 +201,8 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "black"):
                     if check_for_capturing(grid, "black"):
                         if block_threaten(grid, "black"):
-                            running = False
+                            check_mate = True
+                            player = "White"
         else:
             if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
                 Threat_checking.take_back(grid)
@@ -212,7 +216,8 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "white"):
                     if check_for_capturing(grid, "white"):
                         if block_threaten(grid, "white"):
-                            running = False
+                            check_mate = True
+                            player = "Black"
 
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
@@ -261,7 +266,8 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "black"):
                     if check_for_capturing(grid, "black"):
                         if block_threaten(grid, "black"):
-                            running = False
+                            check_mate = True
+                            player = "White"
         else:
             if Threat_checking.check_for_threat(Objects.bkp.row, Objects.bkp.col, BLACK, grid):
                 Threat_checking.take_back(grid)
@@ -275,7 +281,8 @@ def check_piece_move(grid, row, col):
                 if not king_escape(grid, "white"):
                     if check_for_capturing(grid, "white"):
                         if block_threaten(grid, "white"):
-                            running = False
+                            player = "Black"
+                            check_mate = True
 
         if piece_list[0].clor == WHITE and not Threat_checking.back:
             white_move = False
@@ -285,6 +292,7 @@ def check_piece_move(grid, row, col):
             white_move = True
             black_move = False
             move = "white move"
+
         else:
             last_piece.eliminated = False
             grid[row][col].piece = last_piece
@@ -312,6 +320,37 @@ def show_eliminated_piece():
     screen.blit(ele_bp, (560, 610))
 
 
+def exit_btn():
+    pygame.draw.rect(screen, (0, 150, 255), (510, 660, 70, 30))
+    exit_bt = exit_font.render("Exit", True, (0, 0, 0))
+    screen.blit(exit_bt, (525, 667))
+
+
+def restart_btn():
+    pygame.draw.rect(screen, (0, 150, 255), (20, 660, 80, 30))
+    exit_bt = exit_font.render("Restart", True, (0, 0, 0))
+    screen.blit(exit_bt, (25, 667))
+
+
+def make_restart():
+    global grid, check_mate, piece_list, white_move, black_move, black_check, white_check, running, pis, player, move
+    # call created grid function
+    grid = create_grid()
+    make_box(grid)
+    # initialize objects of all piece class
+    Objects.obj_init(grid, screen)
+    check_mate = False
+    piece_list = []
+    white_move = True
+    black_move = False
+    black_check = False
+    white_check = False
+    running = True
+    pis = " "
+    move = "white move"
+    player = "None"
+
+
 # main game loop
 while running:
     # fill the screen with black colour
@@ -324,10 +363,16 @@ while running:
             running = False
         # check if mouse button is pressed
         if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            if pos[1] < 600:
-                row, col = get_row(pos)
-                check_piece_move(grid, row, col)
+            if event.button == 1:
+                pos = pygame.mouse.get_pos()
+                if not check_mate:
+                    if pos[1] < 600:
+                        row, col = get_row(pos)
+                        check_piece_move(grid, row, col)
+                if 510 < pos[0] < 580 and 660 < pos[1] < 690:
+                    running = False
+                if 20 < pos[0] < 100 and 660 < pos[1] < 690:
+                    make_restart()
 
     # To create a chess board
     for i in range(8):
@@ -347,13 +392,21 @@ while running:
         Objects.queen_list[i].show_queen()
 
     create_board()
-    mv_font = font.render(move, True, (125, 55, 200))
-    screen.blit(mv_font, (200, 605))
-    pygame.draw.line(screen, BLACK, (0, 650), (WIDTH, 650), 4)
-    ck_font = chk_font.render("check for "+pis+" king", True, (255, 0, 0))
-    if pis != " ":
-        screen.blit(ck_font, (150, 660))
+    if check_mate:
+        mv_font = font.render("Checkmate", True, (125, 55, 200))
+    else:
+        mv_font = font.render(move, True, (125, 55, 200))
+    screen.blit(mv_font, (200, 610))
+    pygame.draw.line(screen, (0, 0, 0), (0, 650), (WIDTH, 650), 4)
+    if check_mate:
+        ck_font = chk_font.render(player + " player won", True, (255, 0, 0))
+    else:
+        ck_font = chk_font.render("check for " + pis + " king", True, (255, 0, 0))
+    if pis != " " or check_mate:
+        screen.blit(ck_font, (160, 660))
     show_eliminated_piece()
+    exit_btn()
+    restart_btn()
 
     # update the display screen
     pygame.display.update()
