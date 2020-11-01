@@ -26,6 +26,9 @@ def atk_spot_queen(row, col, grid, dirt):
             elif dirt == "right":
                 atk_spot_queen(row, col + 1, grid, "right")
             return lis
+        elif grid[row][col].piece is not None and grid[row][col].piece.piece_name == "king":
+            lis.append(grid[row][col])
+            return lis
     else:
         return lis
 
@@ -63,6 +66,9 @@ def atk_spot_bishop(row, col, grid, dirt):
                 atk_spot_bishop(row - 1, col + 1, grid, "right_u")
             elif dirt == "left_u":
                 atk_spot_bishop(row - 1, col - 1, grid, "left_u")
+            return lis
+        elif grid[row][col].piece is not None and grid[row][col].piece.piece_name == "king":
+            lis.append(grid[row][col])
             return lis
     else:
         return lis
