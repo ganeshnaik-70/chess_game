@@ -221,6 +221,7 @@ class Queen:
     def after_king_atk_spot(self, row, col, grid, dirt):
         if 0 <= row <= 7 and 0 <= col <= 7:
             if grid[row][col].piece is None:
+                str(dirt)
                 self.atk_spot[-1].append(grid[row][col])
         else:
             return
